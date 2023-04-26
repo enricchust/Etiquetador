@@ -39,7 +39,7 @@ class KMeans:
             X = X.reshape([ncols * nrows, 3]) #we assign the new shape to the matrix
             self.X = X
             return X
-            # TODO: mirar què fer en el else
+
 
     def _init_options(self, options=None):
         """
@@ -203,18 +203,21 @@ class KMeans:
 
         self.K = 1
         self.fit()
-        WCD =  self.withinClassDistance()
+        WCD1 =  self.withinClassDistance()
+        percentage = 100
+        percentageOptim = 20
 
-        for k in range(2, max_K + 1):
-            self.K = k
+        while self.k != max_K+1:
+            self.k += 1
             self.fit()
-            self.withinClassDistance()
-            actWCD = self.withinClassDistance()
+            WCD2 = self.withinClassDistance()
 
-            if 100 - 100 * actWCD / WCD < self.options['DEC_threshold']:
-                self.K = k - 1
+            percentage = 100 * WCD2 / WCD1
+            WCD1 = WCD2
+
+            if 100 - percentage < percentageOptim:
                 break
-            WCD = actWCD
+
 
 def distance(X, C):
     """
@@ -231,7 +234,7 @@ def distance(X, C):
     dist = np.empty((X.shape[0], C.shape[0]))
 
     for idx, x in enumerate(X):
-        #dist[:, idx] = np.power(np.sum((X - centroids) ** 2, axis=1), 1 / 2)  # dist[:,idx] assigna la distancia de cada centroide a una columna
+        #dist[:, idx] = np.power(np.sum((X - centroids) ** 2, axis=1), 1 / 2)
         #SI EL DE BAIX NO XUTA, CAMBIAR EL X del for per C
         dist[idx] = np.linialg.norm(x - C, ord=2, axis=1)
 

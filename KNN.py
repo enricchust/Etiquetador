@@ -1,5 +1,5 @@
-__authors__ = 'TO_BE_FILLED'
-__group__ = 'TO_BE_FILLED'
+__authors__ = [1637620, 1638322, 1638529]
+__group__ = 'Grup09'
 
 import numpy as np
 import math
@@ -21,11 +21,14 @@ class KNN:
         :param train_data: PxMxNx3 matrix corresponding to P color images
         :return: assigns the train set to the matrix self.train_data shaped as PxD (P points in a D dimensional space)
         """
-        #######################################################
-        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-        ##  AND CHANGE FOR YOUR OWN CODE
-        #######################################################
-        self.train_data = np.random.randint(8, size=[10, 14400])
+        # if not train_data.type == float:
+        #    train_data.astype(float)
+
+        self.train_data = train_data.reshape(
+            (train_data.shape[0], np.prod(train_data.shape[1:])))
+
+        if not type(self.train_data) == float:
+            self.train_data.astype(float)
 
     def get_k_neighbours(self, test_data, k):
         """
@@ -39,7 +42,13 @@ class KNN:
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-        self.neighbors = np.random.randint(k, size=[test_data.shape[0], k])
+        self.test_data = test_data.reshape(
+            (test_data.shape[0], np.prod(test_data.shape[1:])))
+
+        Mdist = cdist(self.test_data, self.train_data)
+        indx = np.argsort(Mdist, axis=1)
+        self.neighbors = self.labels[
+            indx[:, :k]]  # Agafa les primers k columnes
 
     def get_class(self):
         """
@@ -53,7 +62,17 @@ class KNN:
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-        return np.random.randint(10, size=self.neighbors.size), np.random.random(self.neighbors.size)
+
+        values = []
+
+        for i, nrow in enumerate(self.neighbors):
+            _, indx, recount = np.unique(nrow, return_inverse=True,
+                                         return_counts=True)
+            first_count = recount[indx]
+            max_indx = np.argmax(first_count)
+            values.append(self.neighbors[i][max_indx])
+
+        return values
 
     def predict(self, test_data, k):
         """
