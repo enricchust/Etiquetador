@@ -40,7 +40,7 @@ if __name__ == '__main__':
             search: colors we want to search in the images
 
         Return:
-            Return a list of the indexs that have these colors
+            Return a list of the index that have these colors
         """
         imagesToPrint = []
 

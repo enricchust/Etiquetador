@@ -5,6 +5,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import math
 
+# I added this function to fix the error in the function read_dataset
 def pad_sequences(sequences, pad_value=-1):
     max_len = max(len(s) for s in sequences)
     padded_sequences = []
