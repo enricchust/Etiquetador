@@ -5,10 +5,18 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import math
 
+def pad_sequences(sequences, pad_value=-1):
+    max_len = max(len(s) for s in sequences)
+    padded_sequences = []
+    for s in sequences:
+        padded_sequences.append(s + [pad_value] * (max_len - len(s)))
+    return np.array(padded_sequences)
+
 def read_dataset(ROOT_FOLDER = './images/', gt_json='./test/gt.json', w=60, h=80):
     """
         reads the dataset (train and test), returns the images and labels (class and colors) for both sets
     """
+
     np.random.seed(123)
     ground_truth = json.load(open(gt_json, 'r'))
 
@@ -32,13 +40,17 @@ def read_dataset(ROOT_FOLDER = './images/', gt_json='./test/gt.json', w=60, h=80
     np.random.shuffle(idxs)
     train_imgs = train_imgs[idxs]
     train_class_labels = np.array(train_class_labels)[idxs]
-    train_color_labels = np.array(train_color_labels)[idxs]
+    #estes dos
+    train_color_labels = pad_sequences(train_color_labels)
+    train_color_labels = train_color_labels[idxs]
 
     idxs = np.arange(test_imgs.shape[0])
     np.random.shuffle(idxs)
     test_imgs = test_imgs[idxs]
     test_class_labels = np.array(test_class_labels)[idxs]
-    test_color_labels = np.array(test_color_labels)[idxs]
+    #estes dos
+    test_color_labels = pad_sequences(test_color_labels)
+    test_color_labels = test_color_labels[idxs]
 
     return train_imgs, train_class_labels, train_color_labels, test_imgs, test_class_labels, test_color_labels
 

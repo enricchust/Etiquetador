@@ -3,7 +3,11 @@ __group__ = 'Grup09'
 
 import numpy as np
 import utils
-import time
+
+# TODO: On posem l'array
+colors = np.array(
+    ['Red', 'Orange', 'Brown', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink',
+     'Black', 'Grey', 'White'])
 
 
 class KMeans:
@@ -31,15 +35,15 @@ class KMeans:
                     if matrix has more than 2 dimensions, the dimensionality of the sample space is the length of
                     the last dimension
         """
-        if not X.dtype == float: #check if values of matrix X are float
-            X = X.astype(float) #if not, it convert them to float
+        if not X.dtype == float:
+            X = X.astype(float)
 
         if len(X.shape) == 3:
-            ncols, nrows, _ = X.shape #we unpacks its shape into three variables
-            X = X.reshape([ncols * nrows, 3]) #we assign the new shape to the matrix
+            ncols, nrows, _ = X.shape
+            X = X.reshape([ncols * nrows, 3])
             self.X = X
             return X
-
+            # TODO: mirar què fer en el else
 
     def _init_options(self, options=None):
         """
@@ -71,40 +75,20 @@ class KMeans:
         """
         Initialization of centroids
         """
-
-        # Create an empty array of size (self.K, self.X.shape[1]) to store the old centroids
-        self.old_centroids = np.zeros((self.K, self.X.shape[1]))
-
-        # Check the initialization method specified in the options dictionary
         if self.options['km_init'].lower() == 'first':
-            # Find the first self.K unique rows in self.X
-            # Return the indices of the first occurrence of each unique row
             _, idx = np.unique(self.X, axis=0,
-                               return_index=True)
-
-            # Sort the indices to obtain the rows in their original order
-            idx = np.sort(idx)
-            # Extract the unique rows from self.X using the sorted indices
+                               return_index=True)  # Retorna els index corresponents a files úniques
+            idx = np.sort(
+                idx)  # els ordenem per obtenir les files en l'ordre original
             unique = self.X[idx]  # agafem les files que ens interessen
-
-            # Assign the unique rows as the initial centroids
             self.centroids = unique[:self.K]
 
-        elif self.options['km_init'].lower() == 'random':
-            # Find the unique rows in self.X
-            # Return the indices of the first occurrence of each unique row
+        elif self.options['km_init'].lower() == 'random':  # TODO
             _, idx = np.unique(self.X, axis=0, return_index=True)
-
-            # Sort the indices to obtain the rows in their original order
-            idx = np.sort(idx) #PODEM TREURE???
-
-            # Extract the unique rows from self.X using the sorted indices
-            unique = self.X[idx] #PODEM TREURE???
-
-            # Randomly select self.K rows from self.X without replacement
+            idx = np.sort(idx)
+            unique = self.X[idx]
             random_idx = np.random.choice(self.X.shape[0], size=self.K,
-                                          replace=False)
-            # Assign the randomly selected rows as the initial centroids
+                                          replace=False)  # agafem K files aleatòries sense repetició
             self.centroids = self.X[random_idx]
 
         elif self.options[
@@ -115,108 +99,81 @@ class KMeans:
         """        Calculates the closest centroid of all points in X
         and assigns each point to the closest centroid
         """
-
+        #######################################################
+        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+        ##  AND CHANGE FOR YOUR OWN CODE
+        #######################################################
         arr = distance(self.X, self.centroids)  # N x K
-        # t0 = time.perf_counter()
-        # getLabels = [np.argmin(row) for row in arr] # argmin() retorna l'índex del valor més petit
+        getLabels = [np.argmin(row) for row in
+                     arr]  # argmin() retorna l'índex del valor més petit
 
-        # Find the index of the closest centroid for each point in X
-        # getLabels has dimensions (n_samples,)
-        getLabels = np.argmin(arr, axis=1)  # argmin() returns the index of the smallest value
-
-        # Assign the computed labels to self.labels
         self.labels = getLabels
-
-        # print(f'\n--> GET_LABELS TIME: {time.perf_counter()-t0}')
 
     def get_centroids(self):
         """
         Calculates coordinates of centroids based on the coordinates of all the points assigned to the centroid
         """
+        #######################################################
+        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+        ##  AND CHANGE FOR YOUR OWN CODE
+        #######################################################
+        self.old_centroids = self.centroids
+        centroidsDict = {i: [] for i in range(
+            self.K)}  # Diccionari els clusters com a claus = (0,...,K-1)
 
-        # Save the current centroids as the old centroids
-        self.old_centroids = np.copy(self.centroids)
-
-        # Create a dictionary with keys as cluster labels (0 to K-1)
-        # and empty lists as values to store the coordinates of each point in each cluster
-        centroidsDict = {i: [] for i in range(self.K)}
-
-        # Assign each point to its corresponding cluster
-        for label, row in zip(self.labels, self.X):
+        for label, row in zip(self.labels,
+                              self.X):  # Posem cada punt al cluster corresponent
             centroidsDict[label].append(row)
 
-        # Compute the mean coordinates of all points in each cluster
-        centroids = [np.mean(value, axis=0) for value in centroidsDict.values()]
-
-        # Convert the list of mean coordinates into a NumPy array with dimensions (K, C)
-        # where K is the number of clusters and C is the number of features in the dataset
-        self.centroids = np.array(centroids).reshape(self.K, self.X.shape[1])
+        centroids = [np.mean(value, axis=0) for value in
+                     centroidsDict.values()]  # Fem la mitjana dels punts de cada clúster
+        self.centroids = np.array(centroids).reshape(self.K, self.X.shape[
+            1])  # Ho posem en la forma adequada (K x C)
 
     def converges(self):
         """
         Checks if there is a difference between current and old centroids
         """
+        #######################################################
+        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+        ##  AND CHANGE FOR YOUR OWN CODE
+        #######################################################
 
-        # Check if the centroids have converged based on the tolerance specified in the options dictionary
-        # The centroids are considered to have converged if the absolute difference between the old centroids
-        # and the new centroids is less than or equal to the tolerance
-        # Return True if the centroids have converged, False otherwise
-        # The iterations are checked in the fit() function
-        # Using np.allclose() instead of calculating the absolute difference and checking if all elements are less than or equal to the tolerance
-        # can be more numerically stable when dealing with small values or arrays with different precisions
-        return np.allclose(self.old_centroids, self.centroids)
-
+        # .all() comprova que tots els elements compleixin la condició
+        return abs(self.old_centroids - self.centroids).all() <= self.options[
+            'tolerance']  # les iteracions es miren a la funció fit
 
     def fit(self):
         """
         Runs K-Means algorithm until it converges or until the number
         of iterations is smaller than the maximum number of iterations.
         """
-
-        # Initialize the centroids using the method specified in the options dictionary
-        self._init_centroids()
-
-        # Run the K-Means algorithm until convergence or until the maximum number of iterations is reached
-        while not self.converges() and self.num_iter < self.options['max_iter']:
-            # Assign each point in self.X to the closest centroid
-            self.get_labels()
-            # Compute the mean coordinates of all points in each cluster to obtain the new centroids
-            self.get_centroids()
-            # Increment the number of iterations performed so far
-            self.num_iter += 1
-
-        print(f'\nNUMBER OF FIT ITERATIONS: {self.num_iter}')
+        #######################################################
+        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+        ##  AND CHANGE FOR YOUR OWN CODE
+        #######################################################
+        pass
 
     def withinClassDistance(self):
         """
         returns the within class distance of the current clustering
-
         """
-        self.WCD = sum(np.sqrt(
-            np.sum((self.X - self.centroids[self.labels]) ** 2, axis=1))) / \
-                   self.X.shape[0]
+
+        #######################################################
+        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+        ##  AND CHANGE FOR YOUR OWN CODE
+        #######################################################
+        return np.random.rand()
 
     def find_bestK(self, max_K):
         """
         sets the best k anlysing the results up to 'max_K' clusters
         """
-
-        self.K = 1
-        self.fit()
-        WCD1 =  self.withinClassDistance()
-        percentage = 100
-        percentageOptim = 20
-
-        while self.k != max_K+1:
-            self.k += 1
-            self.fit()
-            WCD2 = self.withinClassDistance()
-
-            percentage = 100 * WCD2 / WCD1
-            WCD1 = WCD2
-
-            if 100 - percentage < percentageOptim:
-                break
+        #######################################################
+        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+        ##  AND CHANGE FOR YOUR OWN CODE
+        #######################################################
+        pass
 
 
 def distance(X, C):
@@ -231,14 +188,12 @@ def distance(X, C):
         i-th point of the first set an the j-th point of the second set
     """
 
-    dist = np.empty((X.shape[0], C.shape[0]))
-
-    for idx, x in enumerate(X):
-        #dist[:, idx] = np.power(np.sum((X - centroids) ** 2, axis=1), 1 / 2)
-        #SI EL DE BAIX NO XUTA, CAMBIAR EL X del for per C
-        dist[idx] = np.linialg.norm(x - C, ord=2, axis=1)
-
-    return dist
+    #########################################################
+    ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+    ##  AND CHANGE FOR YOUR OWN CODE
+    #########################################################
+    arr = np.array([euclidean_dist(x, c) for x in X for c in C])
+    return np.reshape(arr, [X.shape[0], C.shape[0]])
 
 
 def get_colors(centroids):
@@ -250,11 +205,16 @@ def get_colors(centroids):
     Returns:
         labels: list of K labels corresponding to one of the 11 basic colors
     """
+
+    #########################################################
+    ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+    ##  AND CHANGE FOR YOUR OWN CODE
+    #########################################################
     colorProb = utils.get_color_prob(
         centroids)  # retorna matriu K x 11 on cada columna és P(color)
     idx = np.argmax(colorProb,
                     axis=1)  # array de K valors on hi ha els índexs amb probabilitat més alta
-    return utils.colors[idx]  # Agafem els colors corresponents als índexs
+    return colors[idx]  # Agafem els colors corresponents als índexs
 
 
 def euclidean_dist(x1, x2):
