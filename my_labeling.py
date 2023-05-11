@@ -16,6 +16,11 @@ if __name__ == '__main__':
 
     # You can start coding your functions here
 
+    # load our knn
+
+    knn = KNN(train_imgs, train_class_labels)
+
+
     """"
     def get_colors(objective_colors, prediction):
         #we have thought that you can search by two colors, so we put the colors into a list if it's alone
@@ -42,41 +47,61 @@ if __name__ == '__main__':
         Return:
             Return a list of the index that have these colors
         """
-        imagesToPrint = []
+        indicesToPrint = []
+        indicesAcurate = []
 
         for index, element in enumerate(predicted_colors):
             auxList = np.isin(search, element)
             if np.all(auxList): # check that all the colors we want are in the sample
                 #print(index)
-                imagesToPrint.append(index)
-        imagesGiven = test_imgs[imagesToPrint]
-        return visualize_retrieval(imagesGiven, n)
+                indicesToPrint.append(index)
+                indicesAcurate.append(element)
+        imagesGiven = list_images[indicesToPrint]
+        visualize_retrieval(imagesGiven, n)
+        return indicesToPrint, indicesAcurate
 
-    retrieval_by_color(train_color_labels, test_color_labels, ["Blue"], 20)
+    #print(retrieval_by_color(train_imgs, train_color_labels, ["Blue", "White"], 20))
     #knn = KNN(train_imgs, train_labels)
 
     def retrieval_by_shape(list_images, predicted_shapes, search, n):
         """
         Args:
             list_images: dataset of the images, obtained by the ground truth
-            predicted_colors: list of the colors we have obtained after aply the K-means
+            predicted_shapes: list of the colors we have obtained after aply the KNN
             search: colors we want to search in the images
 
         Return:
             Return a list of the indexs that have these shapes
         """
 
-        imagesToPrint = []
-
-        if type(search) != list: search = [search]
+        indicesToPrint = []
+        indicesAcurate = []
 
         for index, element in enumerate(predicted_shapes):
-            auxList = np.isin(search, element)
-            if np.sum(auxList) == len(
-                    search):  # all the colors are in that sample
-                # indexes.append(index)
-                imagesToPrint.append(list_images[index])
-        return visualize_retrieval(imagesToPrint, n)
+            if search in element: # check that all the colors we want are in the sample
+                print(index)
+                indicesToPrint.append(index)
+                indicesAcurate.append(element)
+        imagesGiven = list_images[indicesToPrint]
+        visualize_retrieval(imagesGiven, n)
+        return indicesToPrint, indicesAcurate
+
+    #print(retrieval_by_color(train_imgs, train_class_labels, "Shorts", 20))
+
+
+    def retrieval_combined(list_images, predicted_colors, predicted_shapes, search_color, search_shape, n):
+        indicesToPrint = []
+
+        for index, color in enumerate(predicted_colors):
+            auxList = np.isin(search_color, color)
+            if np.all(auxList):  # check that all the colors we want are in the sample
+                if search_shape in predicted_shapes[index]:
+                    indicesToPrint.append(index)
+        imagesGiven = list_images[indicesToPrint]
+        visualize_retrieval(imagesGiven, n)
+        return indicesToPrint
+
+    print(retrieval_combined(train_imgs, train_color_labels, train_class_labels, ["Blue"], "Shorts", 5))
 
 
 
