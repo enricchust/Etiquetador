@@ -1,6 +1,8 @@
 __authors__ = 'TO_BE_FILLED'
 __group__ = 'TO_BE_FILLED'
 
+import matplotlib.pyplot as plt
+
 from utils_data import *
 import numpy as np
 from KNN import *
@@ -84,9 +86,19 @@ if __name__ == '__main__':
                 indicesAcurate.append(element)
         imagesGiven = list_images[indicesToPrint]
         visualize_retrieval(imagesGiven, n)
-        return indicesToPrint, indicesAcurate
+        return imagesGiven
 
-    #print(retrieval_by_color(train_imgs, train_class_labels, "Shorts", 20))
+
+    knn = KNN(train_imgs, train_class_labels)
+    label_results = knn.predict(test_imgs, 10)
+    #pred = knn.predict(test_imgs, test_class_labels)
+    #preds = knn.predict(test_imgs['test_input'][0], test_imgs['rnd_K'])
+    #print(pred)
+    im = retrieval_by_color(test_imgs, label_results, "Shorts", 20)
+    print(im)
+    #plt.imshow(im[0])
+    #load_imgs(train_imgs, test_imgs)
+    #read_one_img(im[0])
 
 
     def retrieval_combined(list_images, predicted_colors, predicted_shapes, search_color, search_shape, n):
@@ -101,7 +113,7 @@ if __name__ == '__main__':
         visualize_retrieval(imagesGiven, n)
         return indicesToPrint
 
-    print(retrieval_combined(train_imgs, train_color_labels, train_class_labels, ["Blue"], "Shorts", 5))
+    #print(retrieval_combined(train_imgs, test_color_labels, test_class_labels, ["Blue"], "Shorts", 5))
 
 
 

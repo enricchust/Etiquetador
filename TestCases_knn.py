@@ -40,6 +40,7 @@ class TestCases(unittest.TestCase):
         for ix, (train_imgs, train_labels) in enumerate(self.test_cases['input']):
             knn = KNN(train_imgs, train_labels)
             preds = knn.predict(self.test_cases['test_input'][ix][0], self.test_cases['rnd_K'][ix])
+            print(preds)
             np.testing.assert_array_equal(preds, self.test_cases['get_class'][ix])
 
 

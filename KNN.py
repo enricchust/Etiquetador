@@ -42,13 +42,11 @@ class KNN:
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-        self.test_data = test_data.reshape(
-            (test_data.shape[0], np.prod(test_data.shape[1:])))
+        self.test_data = test_data.reshape((test_data.shape[0], np.prod(test_data.shape[1:])))
 
         Mdist = cdist(self.test_data, self.train_data)
         indx = np.argsort(Mdist, axis=1)
-        self.neighbors = self.labels[
-            indx[:, :k]]  # Agafa les primers k columnes
+        self.neighbors = self.labels[indx[:, :k]]  # Agafa les primers k columnes
 
     def get_class(self):
         """
